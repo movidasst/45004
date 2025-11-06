@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guía Interactiva: Evaluación de Desempeño SST (ISO 45004)</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fuente Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root { color-scheme: light; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    /* Reduce animaciones si el usuario lo prefiere */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+
+    /* Navegación lateral */
+    .nav-link.active {
+      background-color: #eff6ff; /* blue-50 */
+      color: #1d4ed8;            /* blue-700 */
+      font-weight: 600;
+      border-right: 3px solid #2563eb; /* blue-600 */
+    }
+    .nav-link svg { color: #4b5563; transition: color .2s ease-in-out; flex-shrink: 0; }
+    .nav-link:not(.active):hover { background-color: #f9fafb; }
+    .nav-link:not(.active):hover svg { color: #111827; }
+
+    /* Secciones */
+    .step-content, .source-content { display: none; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+    .step-content.active, .source-content.active { display:block; animation: fadeIn .4s ease-out; }
+
+    /* Flip cards */
+    .flip-card { background: transparent; width: 100%; height: 320px; perspective: 1000px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: left; transition: transform .6s; transform-style: preserve-3d; border-radius:.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1); }
+    .flip-card.is-flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius:.75rem; padding: 1.25rem; }
+    .flip-card-front { display:flex; flex-direction:column; justify-content:space-between; }
+    .flip-card-back { transform: rotateY(180deg); overflow-y:auto; }
+
+    /* Quiz */
+    .quiz-option { transition: all .2s ease-in-out; }
+    .quiz-option:hover { border-color: #3b82f6; background: #eff6ff; }
+    .quiz-option.correct { border-color:#16a34a; background:#f0fdf4; color:#15803d; font-weight:600; }
+    .quiz-option.incorrect { border-color:#dc2626; background:#fef2f2; color:#b91c1c; font-weight:600; }
+    .quiz-option.disabled { pointer-events:none; opacity:.7; }
+
+    /* Checklist */
+    .checklist-item { display:flex; align-items:center; padding:.75rem; border:1px solid #e5e7eb; border-radius:.75rem; background:#f9fafb; transition: all .2s ease-in-out; cursor:pointer; }
+    .checklist-item:hover { border-color:#9ca3af; }
+    .checklist-item input[type="checkbox"] { width:1.25rem; height:1.25rem; margin-right:.75rem; flex-shrink:0; accent-color:#2563eb; }
+    .checklist-item span { color:#374151; font-size:1.0625rem; line-height:1.6rem; }
+    .checklist-item.checked { background:#f0fdf4; border-color:#86efac; }
+    .checklist-item.checked span { text-decoration: line-through; color:#6b7280; }
+    
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-100 via-white to-blue-50 min-h-screen antialiased text-gray-800">
+  <!-- Overlay del menú móvil -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/60 z-30 hidden" aria-hidden="true"></div>
+
+  <!-- Contenedor principal -->
+  <div class="relative">
+    <!-- NAV LATERAL -->
+    <nav id="mobile-menu-nav" class="w-72 bg-white shadow-lg border-r border-gray-200 h-full fixed top-0 left-0 z-40 p-6 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+      <!-- Botón cerrar (móvil) -->
+      <button id="mobile-menu-close-btn" type="button" class="md:hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Cerrar menú">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="flex items-center mb-4">
+        <img src="https://assets.poap.xyz/27226ed6-b9f6-4362-8ea6-8ad3f9c3d641.png" alt="Logo La Movida de SST" class="h-12 w-12 mr-3 rounded-lg ring-1 ring-gray-200" loading="lazy" decoding="async" />
+        <h1 class="text-2xl font-bold text-gray-900 leading-tight">La Movida de <br /> Seguridad y Salud</h1>
+      </div>
+      <p class="text-sm text-gray-600 mb-8">Guía Interactiva ISO 45004: Evaluación del Desempeño</p>
+
+      <ul class="space-y-2" role="tablist" aria-label="Pasos de la guía">
+        <li>
+          <button type="button" id="nav-step1" class="nav-link active flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step1" data-step-index="1" role="tab" aria-selected="true" aria-controls="step1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            ¿Por qué Evaluar?
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step2" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step2" data-step-index="2" role="tab" aria-selected="false" aria-controls="step2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            El Proceso Central
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step3" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step3" data-step-index="3" role="tab" aria-selected="false" aria-controls="step3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+            Fuentes de Información
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step4" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step4" data-step-index="4" role="tab" aria-selected="false" aria-controls="step4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            Tipos de Indicadores
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step5" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step5" data-step-index="5" role="tab" aria-selected="false" aria-controls="step5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+            Monitorear y Analizar
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step6" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step6" data-step-index="6" role="tab" aria-selected="false" aria-controls="step6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+            Actuar y Comunicar
+          </button>
+        </li>
+        <li>
+          <button type="button" id="nav-step7" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step7" data-step-index="7" role="tab" aria-selected="false" aria-controls="step7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0015.357 2m0 0H15" /></svg>
+            Revisar y Mejorar
+          </button>
+        </li>
+
+        <li class="pt-4"><hr class="border-gray-200" /></li>
+
+        <!-- Selector de contexto -->
+        <li class="px-3 pt-2 pb-1">
+          <label for="context-selector" class="block text-sm font-medium text-gray-500 mb-2">Tu Contexto:</label>
+          <select id="context-selector" class="w-full p-2 text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="bajo_riesgo">Bajo Riesgo / Oficina</option>
+            <option value="alto_riesgo">Alto Riesgo / Industria</option>
+          </select>
+        </li>
+
+        <li>
+          <button type="button" id="nav-step8" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step8" data-step-index="8" role="tab" aria-selected="false" aria-controls="step8">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Autoevaluación
+          </button>
+        </li>
+
+        <!-- Glosario -->
+        <li>
+          <button type="button" id="nav-step-glossary" class="nav-link flex items-center w-full p-3 rounded-lg text-gray-700 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500" data-step-id="step-glossary" role="tab" aria-selected="false" aria-controls="step-glossary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></svg>
+            Glosario
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="flex-1 md:ml-72 p-6 md:p-10">
+      <!-- Botón de Menú Móvil -->
+      <button id="mobile-menu-open-btn" type="button" class="md:hidden p-2 mb-4 text-gray-600 hover:text-gray-900 bg-white rounded-lg shadow-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Abrir menú">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+
+      <!-- Progreso -->
+      <div class="mb-8">
+        <div class="flex justify-between mb-1">
+          <span id="progress-text" class="text-sm font-medium text-blue-700">Progreso: Paso 1 de 8</span>
+          <span id="progress-percent" class="text-sm font-medium text-blue-700">12.5%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width:12.5%"></div>
+        </div>
+      </div>
+
+      <!-- Paso 1 -->
+      <section id="step1" class="step-content active bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step1">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 1: ¿Por qué Evaluar el Desempeño?</h2>
+        <p class="text-base text-gray-700 mb-4 max-w-prose">El propósito de la evaluación del desempeño en SST es ayudar a la organización a determinar hasta qué punto se están alcanzando sus <strong>resultados previstos</strong>.</p>
+        <ul class="list-disc list-inside space-y-3 text-base text-gray-700 my-6 max-w-prose">
+          <li>Determinar si la <strong>alta dirección</strong> demuestra liderazgo y compromiso.</li>
+          <li>Identificar qué procesos están logrando los resultados planificados y cuáles no.</li>
+          <li>Descubrir oportunidades y necesidades de acción para mejorar los procesos.</li>
+        </ul>
+        <div class="p-6 bg-blue-50 border border-blue-200 rounded-lg mt-8">
+          <p class="font-semibold text-blue-800 text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            En resumen: La evaluación es esencial para la toma de decisiones efectiva y la mejora continua.
+          </p>
+        </div>
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 2 -->
+      <section id="step2" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step2">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 2: Elementos de un Proceso de Evaluación</h2>
+        <p class="text-base text-gray-700 mb-6 max-w-prose">La norma (Sección 5.2) establece un proceso claro que la organización debe seguir:</p>
+        <ol class="list-decimal list-inside space-y-4 text-base text-gray-700 max-w-prose">
+          <li><strong>Establecer los resultados previstos</strong> (¿Qué queremos lograr?).</li>
+          <li>Determinar qué se debe hacer para alcanzar esos resultados.</li>
+          <li><strong>Elegir los procesos</strong>, fuentes de info y herramientas (Ver Paso 3).</li>
+          <li>Determinar la información necesaria (datos, hallazgos, etc.).</li>
+          <li><strong>Monitorear, medir, analizar y evaluar</strong> el desempeño (Ver Paso 5).</li>
+          <li><strong>Emprender acciones</strong> basadas en la evaluación (Ver Paso 6).</li>
+        </ol>
+        <button type="button" class="mt-8 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-lg hover:bg-blue-200 transition case-btn" data-case="step2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+          Ver Ejemplo Práctico
+        </button>
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 3: Tabs -->
+      <section id="step3" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step3">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Paso 3: Fuentes de Información y Herramientas</h2>
+        <p class="text-base text-gray-700 mb-6 max-w-prose"><strong>Haz clic en cada pestaña</strong> para explorar las fuentes de información más comunes:</p>
+
+        <div class="flex flex-wrap border-b border-gray-200 mb-6" role="tablist" aria-label="Fuentes de información">
+          <button id="tab-inspections" class="source-nav-link py-3 px-4 font-medium text-blue-600 border-b-2 border-blue-500" role="tab" aria-selected="true" aria-controls="s-inspections" type="button" data-source="s-inspections">Inspecciones</button>
+          <button id="tab-audits" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-audits" type="button" data-source="s-audits">Auditorías</button>
+          <button id="tab-reviews" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-reviews" type="button" data-source="s-reviews">Revisiones</button>
+          <button id="tab-interviews" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-interviews" type="button" data-source="s-interviews">Entrevistas</button>
+          <button id="tab-tracking" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-tracking" type="button" data-source="s-tracking">Seguimiento</button>
+          <button id="tab-investigations" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-investigations" type="button" data-source="s-investigations">Investigaciones</button>
+          <button id="tab-surveys" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-surveys" type="button" data-source="s-surveys">Encuestas (Psicosocial)</button>
+          <button id="tab-health" class="source-nav-link py-3 px-4 font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-300" role="tab" aria-selected="false" aria-controls="s-health" type="button" data-source="s-health">Vigilancia de la Salud</button>
+        </div>
+
+        <div id="source-content-wrapper" class="bg-gray-50 p-6 rounded-lg border border-gray-200 min-h-[250px]">
+          <div id="s-inspections" class="source-content active" role="tabpanel" aria-labelledby="tab-inspections"><h3 class="text-xl font-semibold text-blue-700 mb-3">Inspecciones (5.3.2)</h3><p class="text-gray-700 max-w-prose">Medios rápidos para revisar el estado de los controles, el progreso de los objetivos y el cumplimiento legal. Permiten observar cómo se realiza realmente el trabajo.</p></div>
+          <div id="s-audits" class="source-content" role="tabpanel" aria-labelledby="tab-audits"><h3 class="text-xl font-semibold text-blue-700 mb-3">Auditorías (5.3.11)</h3><p class="text-gray-700 max-w-prose">Identifican deficiencias en los procesos y en el sistema, y encuentran oportunidades de mejora.</p></div>
+          <div id="s-reviews" class="source-content" role="tabpanel" aria-labelledby="tab-reviews"><h3 class="text-xl font-semibold text-blue-700 mb-3">Revisiones Pre y Post-Actividad (5.3.3)</h3><p class="text-gray-700 max-w-prose">Proporcionan información sobre problemas de recursos, brechas de competencia y efectividad de controles.</p></div>
+          <div id="s-interviews" class="source-content" role="tabpanel" aria-labelledby="tab-interviews"><h3 class="text-xl font-semibold text-blue-700 mb-3">Entrevistas (5.3.8)</h3><p class="text-gray-700 max-w-prose">Recopilan información sobre peligros y eficacia de controles. Es vital crear un ambiente seguro (sin temor a represalias).</p></div>
+          <div id="s-tracking" class="source-content" role="tabpanel" aria-labelledby="tab-tracking"><h3 class="text-xl font-semibold text-blue-700 mb-3">Seguimiento de Lesiones (5.3.9)</h3><p class="text-gray-700 max-w-prose">Analiza datos de lesiones, enfermedades y cuasi-accidentes. Un bajo número de informes debe investigarse (¿cultura de no-reporte?).</p></div>
+          
+          <!-- SECCIÓN DE IA ELIMINADA -->
+          <div id="s-investigations" class="source-content" role="tabpanel" aria-labelledby="tab-investigations">
+            <h3 class="text-xl font-semibold text-blue-700 mb-3">Investigaciones de Incidentes (5.3.10)</h3>
+            <p class="text-gray-700 max-w-prose">Ayudan a entender qué pasó y por qué, sin culpar al trabajador y considerando factores organizacionales (ritmo de trabajo, recursos).</p>
+          </div>
+          <!-- FIN SECCIÓN ELIMINADA -->
+
+          <div id="s-surveys" class="source-content" role="tabpanel" aria-labelledby="tab-surveys"><h3 class="text-xl font-semibold text-blue-700 mb-3">Encuestas de Clima y R. Psicosocial (5.3.7)</h3><p class="text-gray-700 max-w-prose">Fuente de información crucial. Las encuestas (a menudo anónimas) ayudan a medir la percepción de los trabajadores sobre:</p><ul class="list-disc list-inside text-gray-700 space-y-2 mt-3 max-w-prose"><li>Carga de trabajo, estrés y burnout.</li><li>Liderazgo y apoyo de los supervisores.</li><li>Violencia y acoso en el trabajo.</li><li>Cultura de reporte y confianza.</li></ul><p class="text-gray-700 mt-3 max-w-prose"><strong>Nota de auditor:</strong> Ignorar los riesgos psicosociales en la evaluación de desempeño es un fallo significativo. Estas encuestas proveen datos vitales que los indicadores de accidentes físicos no pueden mostrar.</p></div>
+          <div id="s-health" class="source-content" role="tabpanel" aria-labelledby="tab-health"><h3 class="text-xl font-semibold text-blue-700 mb-3">Vigilancia de la Salud y Exposición (5.3.4)</h3><p class="text-gray-700 max-w-prose">Fuente técnica clave. Incluye monitoreo de exposición y vigilancia médica para evaluar la eficacia de los controles a largo plazo.</p><ul class="list-disc list-inside text-gray-700 space-y-2 mt-3 max-w-prose"><li>Monitoreo de agentes químicos.</li><li>Monitoreo de agentes físicos (ruido, vibraciones, estrés térmico).</li><li>Monitoreo de riesgos ergonómicos.</li><li>Resultados de vigilancia de la salud (audiometrías, espirometrías, exámenes médicos).</li></ul><p class="text-gray-700 mt-3 max-w-prose"><strong>Nota de auditor:</strong> Si tus indicadores reactivos (ej. “N° de enfermedades”) son bajos, pero no tienes datos de vigilancia de la salud, no puedes demostrar que tus controles son efectivos.</p></div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 4 -->
+      <section id="step4" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step4">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 4: Tipos de Indicadores</h2>
+        <p class="text-base text-gray-700 mb-6 max-w-prose">La norma recomienda un enfoque equilibrado. <strong>(Haz clic en las tarjetas para ver los detalles)</strong></p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="flip-card" aria-label="Indicadores Proactivos" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front bg-green-50 border border-green-300">
+                <div>
+                  <h3 class="text-2xl font-semibold text-green-800 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                    Indicadores Proactivos (Leading)
+                  </h3>
+                  <p class="text-base text-green-700">Miden acciones tomadas para <strong>influir en el desempeño futuro</strong> y prevenir riesgos.</p>
+                </div>
+                <div class="mt-4 text-sm font-medium text-green-700">Haz clic para ver ejemplos</div>
+              </div>
+              <div class="flip-card-back bg-green-100 border border-green-300">
+                <h3 class="text-xl font-semibold text-green-800 mb-3">Ejemplos Proactivos</h3>
+                <ul class="list-disc list-inside text-base text-green-700 space-y-2">
+                  <li>% de trabajadores formados.</li>
+                  <li>N° de observaciones preventivas.</li>
+                  <li>% de acciones correctivas cerradas.</li>
+                  <li>N° de sugerencias reportadas.</li>
+                  <li>% de inspecciones completadas.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="flip-card" aria-label="Indicadores Reactivos" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front bg-red-50 border border-red-300">
+                <div>
+                  <h3 class="text-2xl font-semibold text-red-800 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                    Indicadores Reactivos (Lagging)
+                  </h3>
+                  <p class="text-base text-red-700">Miden <strong>resultados pasados</strong> y eventos que ya ocurrieron. Muestran fallos en el sistema.</p>
+                </div>
+                <div class="mt-4 text-sm font-medium text-red-700">Haz clic para ver ejemplos</div>
+              </div>
+              <div class="flip-card-back bg-red-100 border border-red-300">
+                <h3 class="text-xl font-semibold text-red-800 mb-3">Ejemplos Reactivos</h3>
+                <ul class="list-disc list-inside text-base text-red-700 space-y-2">
+                  <li>Tasa de incidencia de lesiones.</li>
+                  <li>N° de casos de enfermedades laborales.</li>
+                  <li>N° de incidentes y no conformidades.</li>
+                  <li>Días de trabajo perdidos.</li>
+                  <li>Costos de accidentes.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="font-semibold text-yellow-800 text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <strong>Consejo clave:</strong> No te centres solo en indicadores reactivos. ISO 45004 promueve un <strong>enfoque equilibrado</strong>.
+          </p>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-gray-200">
+          <h3 class="text-2xl font-semibold text-gray-800 mb-6">La Otra Dimensión: Cuantitativo vs. Cualitativo (Sec 6.5.3)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-md">
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+                Indicadores Cuantitativos
+              </h3>
+              <p class="text-base text-gray-700 mb-4 max-w-prose">Se basan en números. Miden el “Qué”, “Cuánto” o “Con qué frecuencia”.</p>
+              <p class="text-base font-medium text-gray-800 mb-2">Ejemplos:</p>
+              <ul class="list-disc list-inside text-base text-gray-700 space-y-1"><li>Tasa de incidencia de lesiones.</li><li>% de inspecciones completadas.</li><li>N° de sugerencias de mejora recibidas.</li><li>Promedio de días para cerrar una acción.</li></ul>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-md">
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                Indicadores Cualitativos
+              </h3>
+              <p class="text-base text-gray-700 mb-4 max-w-prose">Se basan en descripciones. Miden el “Por qué” o el “Cómo”.</p>
+              <p class="text-base font-medium text-gray-800 mb-2">Ejemplos:</p>
+              <ul class="list-disc list-inside text-base text-gray-700 space-y-1"><li>Conclusiones de investigaciones.</li><li>Temas de grupos focales.</li><li>Percepción de la cultura de seguridad.</li><li>Eficacia percibida de una formación.</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN DE IA ELIMINADA -->
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 5 -->
+      <section id="step5" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step5">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 5: Monitorear, Medir, Analizar y Evaluar</h2>
+        <div class="space-y-6">
+          <div class="p-6 border border-gray-200 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-2">1. Monitorear (8.3)</h3><p class="text-base text-gray-700 max-w-prose">Implica la <strong>verificación y observación crítica</strong>. Es cualitativo. (Ej. entrevistas, observaciones de trabajo).</p></div>
+          <div class="p-6 border border-gray-200 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-2">2. Medir (8.3)</h3><p class="text-base text-gray-700 max-w-prose">Implica la <strong>asignación de números</strong>. Es cuantitativo. (Ej. usar equipos calibrados para medir exposición).</p></div>
+          <div class="p-6 border border-gray-200 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-2">3. Analizar (8.4)</h3><p class="text-base text-gray-700 max-w-prose">Es examinar los datos para <strong>establecer patrones y tendencias</strong>. (Ej. gráficos de incidentes por área).</p></div>
+          <div class="p-6 border border-gray-200 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-2">4. Evaluar (8.5)</h3><p class="text-base text-gray-700 max-w-prose">Es <strong>comparar los resultados</strong> del análisis con los <strong>resultados previstos</strong> (objetivos, requisitos legales).</p></div>
+        </div>
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 6 -->
+      <section id="step6" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step6">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 6: Actuar sobre los Resultados y Comunicar</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-gray-50 p-6 rounded-lg border border-gray-200"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Actuar (Sección 10)</h3><p class="text-base text-gray-700 mb-4 max-w-prose">La organización debe <strong>priorizar acciones</strong> considerando:</p><ul class="list-disc list-inside text-base text-gray-700 space-y-2"><li>Impacto potencial en SST.</li><li>Cumplimiento de requisitos legales.</li><li>Alineación con la estrategia.</li></ul></div>
+          <div class="bg-gray-50 p-6 rounded-lg border border-gray-200"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Comunicar (Sección 9)</h3><p class="text-base text-gray-700 mb-4 max-w-prose">Los resultados deben <strong>comunicarse interna y externamente</strong>, según el plan de comunicación.</p><ul class="list-disc list-inside text-base text-gray-700 space-y-2"><li>A trabajadores y partes interesadas.</li><li>En reuniones de SST, briefings, etc.</li></ul></div>
+        </div>
+        <button type="button" class="mt-8 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded-lg hover:bg-blue-200 transition case-btn" data-case="step6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+          Ver Ejemplo Práctico
+        </button>
+
+        <!-- SECCIÓN DE IA ELIMINADA -->
+        
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 7 -->
+      <section id="step7" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step7">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 7: Revisar el Proceso de Evaluación</h2>
+        <p class="text-base text-gray-700 mb-6 max-w-prose">El ciclo se cierra mejorando el propio proceso de evaluación (Sección 11). La organización debe revisar sus procesos de evaluación de <strong>forma regular</strong> para determinar si:</p>
+        <ul class="list-disc list-inside space-y-3 text-base text-gray-700 mb-6 max-w-prose"><li>Siguen siendo <strong>adecuados, pertinentes y eficaces</strong>.</li><li>Los criterios o supuestos en los que se basan siguen siendo válidos.</li></ul>
+
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Cuidado con las “Consecuencias no deseadas” (Tabla 5)</h3>
+        <div class="space-y-4 mb-8 max-w-prose">
+          <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg shadow-sm"><p class="font-semibold text-red-800">Incentivos que fomentan la sub-notificación</p><p class="text-red-700">Bonos por “cero accidentes” suelen desincentivar el reporte de incidentes menores.</p></div>
+          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm"><p class="font-semibold text-yellow-800">Indicadores demasiado complicados</p><p class="text-yellow-700">Si es difícil de entender o medir, habrá errores o mala interpretación.</p></div>
+          <div class="bg-gray-50 border-l-4 border-gray-400 p-4 rounded-r-lg shadow-sm"><p class="font-semibold text-gray-800">Indicadores no alineados</p><p class="text-gray-700">Si no se conectan con la estrategia del negocio, no habrá recursos para actuar.</p></div>
+        </div>
+
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Desencadenantes comunes para una revisión</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-blue-50 p-6 rounded-lg border border-blue-200"><h4 class="text-xl font-semibold text-blue-700 mb-3">Factores internos</h4><ul class="list-disc list-inside text-base text-blue-700 space-y-1"><li>Cambios en la estructura.</li><li>Un incidente grave.</li><li>Nuevos procesos de trabajo.</li><li>Resultados de la consulta.</li></ul></div>
+          <div class="bg-gray-100 p-6 rounded-lg border border-gray-200"><h4 class="text-xl font-semibold text-gray-800 mb-3">Factores externos</h4><ul class="list-disc list-inside text-base text-gray-700 space-y-1"><li>Cambios en requisitos legales.</li><li>Mejoras en la tecnología.</li><li>Cambios en necesidades de clientes.</li></ul></div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-lg hover:bg-yellow-200 transition shadow-sm hover:shadow-md quiz-btn" data-quiz="step7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            Prueba tu Conocimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- Paso 8: Autoevaluación -->
+      <section id="step8" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Paso 8: Autoevaluación de Madurez</h2>
+        <p class="text-base text-gray-700 mb-6 max-w-prose">Has completado la guía. Ahora, usa este checklist para hacer una autoevaluación rápida de la madurez de tu organización. <strong>Tu progreso se guardará en este navegador.</strong></p>
+        <div class="mb-6">
+          <div class="flex justify-between mb-1"><span id="checklist-progress-text" class="text-sm font-medium text-green-700">Progreso del Checklist: 0 de 8</span><span id="checklist-progress-percent" class="text-sm font-medium text-green-700">0%</span></div>
+          <div class="w-full bg-gray-200 rounded-full h-2.5"><div id="checklist-progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-500" style="width:0%"></div></div>
+        </div>
+        <div id="checklist-container" class="space-y-4">
+          <label class="checklist-item"><input type="checkbox" id="chk-1" class="sst-checkbox" data-label="No tenemos 'resultados previstos' de SST claros y definidos." /><span>¿Tenemos "resultados previstos" de SST claros y definidos? (Paso 1)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-2" class="sst-checkbox" data-label="No tenemos un proceso documentado para evaluar el desempeño." /><span>¿Tenemos un proceso documentado para evaluar el desempeño? (Paso 2)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-3" class="sst-checkbox" data-label="Usamos muy pocas fuentes de información (ej. solo auditorías)." /><span>¿Usamos múltiples fuentes de información (inspecciones, auditorías, entrevistas) para evaluar? (Paso 3)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-4" class="sst-checkbox" data-label="Nuestro enfoque de indicadores está desequilibrado (ej. solo reactivos)." /><span>¿Nuestro enfoque de indicadores es "equilibrado" (usamos proactivos y reactivos)? (Paso 4)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-5" class="sst-checkbox" data-label="No distinguimos claramente entre 'monitorear' y 'medir'." /><span>¿Distinguimos entre "monitorear" (cualitativo) y "medir" (cuantitativo)? (Paso 5)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-6" class="sst-checkbox" data-label="Las evaluaciones rara vez se traducen en 'acciones' priorizadas." /><span>¿Las evaluaciones se traducen en "acciones" priorizadas? (Paso 6)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-7" class="sst-checkbox" data-label="No 'comunicamos' activamente los resultados de la evaluación a los trabajadores." /><span>¿"Comunicamos" activamente los resultados de la evaluación a los trabajadores? (Paso 6)</span></label>
+          <label class="checklist-item"><input type="checkbox" id="chk-8" class="sst-checkbox" data-label="No revisamos si nuestros indicadores causan 'consecuencias no deseadas'." /><span>¿Revisamos periódicamente si nuestros indicadores causan "consecuencias no deseadas" (ej. miedo a reportar)? (Paso 7)</span></label>
+        </div>
+        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end">
+          <button id="reset-checklist-button" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-red-100 text-red-800 font-semibold rounded-lg hover:bg-red-200 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 110 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg>Resetear</button>
+        </div>
+      </section>
+
+      <!-- Glosario -->
+      <section id="step-glossary" class="step-content bg-white/80 p-6 md:p-10 rounded-xl shadow-2xl backdrop-blur-lg border border-white/40" role="tabpanel" aria-labelledby="nav-step-glossary">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Glosario</h2>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Glosario de Términos Clave</h3>
+        <div class="space-y-4 mb-8">
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Desempeño de SST</h4><p class="text-gray-700">Resultados medibles del sistema de gestión de SST, relacionados con la eficacia de la prevención de lesiones y deterioro de la salud.</p></div>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Medición (3.1)</h4><p class="text-gray-700">Proceso para determinar un valor. (Diferente de monitorear).</p></div>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Indicador (3.2)</h4><p class="text-gray-700">Variable que puede medirse o describirse, representando el estado de operaciones, procesos, gestión y resultados.</p></div>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Indicador Proactivo (Leading)</h4><p class="text-gray-700">Medida de actividades para prevenir incidentes (ej. % de formaciones completadas).</p></div>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Indicador Reactivo (Lagging)</h4><p class="text-gray-700">Medida de resultados después del evento (ej. tasa de accidentabilidad).</p></div>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-base text-gray-800">Mejora Continua</h4><p class="text-gray-700">Actividad recurrente para mejorar el desempeño (PHVA).</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal caso -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 hidden z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-xl p-6 relative max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
+        <h3 id="modal-title" class="text-2xl font-semibold text-gray-900">Título del Modal</h3>
+        <button id="modal-close" type="button" class="text-gray-500 hover:text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Cerrar">&times;</button>
+      </div>
+      <div id="modal-content" class="text-base text-gray-700"><p>Contenido del ejemplo práctico...</p></div>
+      <div class="text-right mt-6">
+        <button type="button" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700" id="modal-footer-close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal quiz -->
+  <div id="quiz-modal-overlay" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-xl p-6 relative max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
+        <h3 id="quiz-title" class="text-2xl font-semibold text-gray-900">Prueba tu Conocimiento</h3>
+        <button id="quiz-close" type="button" class="text-gray-500 hover:text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Cerrar">&times;</button>
+      </div>
+      <div>
+        <p id="quiz-question" class="text-base text-gray-800 font-medium mb-4">Pregunta del quiz...</p>
+        <div id="quiz-options" class="space-y-3"></div>
+        <div id="quiz-feedback" class="mt-4 text-base font-semibold"></div>
+      </div>
+      <div class="text-right mt-6">
+        <button type="button" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700" id="quiz-footer-close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal IA (ELIMINADO) -->
+
+  <script>
+    // ---------- Estado general ----------
+    const totalSteps = 8;
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressPercent = document.getElementById('progress-percent');
+    let lastMainStepIndex = 1;
+
+    const contextStorageKey = 'laMovidaSSTContextProfile';
+
+    // Gestión de foco en modales
+    let lastFocused;
+    const trapFocus = (overlay) => {
+      const focusable = overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (focusable.length) focusable[0].focus();
+    };
+
+    // ---------- Menú móvil ----------
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+    const mobileMenuNav = document.getElementById('mobile-menu-nav');
+    const mobileMenuOpenBtn = document.getElementById('mobile-menu-open-btn');
+    const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
+
+    function openMobileMenu() {
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('hidden');
+      if (mobileMenuNav) mobileMenuNav.classList.remove('-translate-x-full');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('hidden');
+      if (mobileMenuNav) mobileMenuNav.classList.add('-translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Listeners Menú Móvil
+      if (mobileMenuOpenBtn) mobileMenuOpenBtn.addEventListener('click', openMobileMenu);
+      if (mobileMenuCloseBtn) mobileMenuCloseBtn.addEventListener('click', closeMobileMenu);
+      if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+      // Navegación de pasos
+      document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          showStep(btn);
+          if (window.innerWidth < 768) closeMobileMenu();
+        });
+      });
+
+      // Tabs (fuentes)
+      document.querySelectorAll('.source-nav-link').forEach(tab => {
+        tab.addEventListener('click', () => showSource(tab.dataset.source, tab));
+      });
+
+      // Quiz (botones por sección)
+      document.querySelectorAll('.quiz-btn').forEach(btn => {
+        btn.addEventListener('click', () => showQuiz(btn.dataset.quiz));
+      });
+
+      // Estudio de caso
+      document.querySelectorAll('.case-btn').forEach(btn => {
+        btn.addEventListener('click', () => showCaseStudy(btn.dataset.case));
+      });
+
+      // Wizard (Listeners de IA eliminados)
+      
+      // Contexto
+      loadContextProfile();
+      const contextSel = document.getElementById('context-selector');
+      if (contextSel) contextSel.addEventListener('change', (e) => updateContextProfile(e.target.value));
+
+      // Checklist
+      initializeChecklist();
+
+      // IA botones (Listeners eliminados)
+      
+      // Flip cards: click/teclado
+      document.querySelectorAll('.flip-card').forEach(card => {
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('is-flipped'); }});
+      });
+
+      // Iniciar UI
+      const firstNav = document.getElementById('nav-step1');
+      if (firstNav) showStep(firstNav);
+      showSource('s-inspections', document.getElementById('tab-inspections'));
+    });
+
+    function showStep(navElement) {
+      hideModal(); hideQuiz(); // hideAiModal() eliminado
+      const stepId = navElement.dataset.stepId;
+      const stepIndexStr = navElement.dataset.stepIndex;
+      document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(l => { l.classList.remove('active'); l.setAttribute('aria-selected','false'); });
+      const active = document.getElementById(stepId); if (active) active.classList.add('active');
+      navElement.classList.add('active'); navElement.setAttribute('aria-selected','true');
+      if (stepIndexStr) { lastMainStepIndex = parseInt(stepIndexStr,10); updateProgressBar(lastMainStepIndex); } else { updateProgressBar(lastMainStepIndex); }
+    }
+
+    function updateProgressBar(stepIndex) {
+      if (!progressBar || !progressText || !progressPercent) return;
+      const pct = (stepIndex / totalSteps) * 100;
+      const display = (Math.round(pct * 10) / 10).toFixed(1);
+      progressBar.style.width = `${pct}%`;
+      progressText.textContent = `Progreso: Paso ${stepIndex} de ${totalSteps}`;
+      progressPercent.textContent = `${display}%`;
+    }
+
+    function showSource(sourceId, tabElement) {
+      document.querySelectorAll('.source-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.source-nav-link').forEach(t => {
+        t.setAttribute('aria-selected','false');
+        t.classList.remove('text-blue-600','border-blue-500');
+        t.classList.add('text-gray-500','hover:text-gray-800','hover:border-gray-300');
+      });
+      const panel = document.getElementById(sourceId);
+      if (panel) panel.classList.add('active');
+      if (tabElement) {
+        tabElement.setAttribute('aria-selected','true');
+        tabElement.classList.add('text-blue-600','border-blue-500');
+        tabElement.classList.remove('text-gray-500','hover:text-gray-800','hover:border-gray-300');
+      }
+    }
+
+    // Contexto
+    function loadContextProfile() {
+      const profile = localStorage.getItem(contextStorageKey);
+      const sel = document.getElementById('context-selector');
+      if (!sel) return;
+      if (profile) {
+        sel.value = profile;
+      } else {
+        sel.value = 'bajo_riesgo';
+        updateContextProfile('bajo_riesgo');
+      }
+    }
+    function updateContextProfile(profile) { localStorage.setItem(contextStorageKey, profile); }
+
+    // Modal caso
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const modalCloseTop = document.getElementById('modal-close');
+    const modalCloseBottom = document.getElementById('modal-footer-close');
+    if (modalCloseTop) modalCloseTop.addEventListener('click', hideModal);
+    if (modalCloseBottom) modalCloseBottom.addEventListener('click', hideModal);
+
+    function showModal(title, content) {
+      lastFocused = document.activeElement;
+      if (modalTitle) modalTitle.textContent = title;
+      if (modalContent) modalContent.textContent = content;
+      if (modalOverlay) modalOverlay.classList.remove('hidden');
+      trapFocus(modalOverlay);
+    }
+    function hideModal() {
+      if (modalOverlay) modalOverlay.classList.add('hidden');
+      if (lastFocused) lastFocused.focus();
+    }
+
+    const caseStudies = {
+      'step2': {
+        'bajo_riesgo': { title: 'Estudio de Caso: Ergonomía en Oficina', content: "Una consultora notó un aumento del 40% en reportes de dolor de espalda. Resultado previsto: reducirlo. Proceso: encuestas y entrevistas. Acción: sillas ergonómicas y pausas activas. Resultado: objetivo logrado." },
+        'alto_riesgo': { title: 'Estudio de Caso: Tasa de Cortes', content: "Meta: reducir micro-cortes en un 30%. Proceso: inspecciones de guantes y entrevistas. Análisis: 80% post-almuerzo. Acción: rotación y nuevo guante. Resultado: objetivo logrado." }
+      },
+      'step6': {
+        'bajo_riesgo': { title: 'Estudio de Caso: Estrés Laboral (Comunicación)', content: "Encuesta reveló alto estrés. Acción: redistribuir carga y política de desconexión digital. Comunicación: email gerencial reconociendo el problema y medidas de apoyo." },
+        'alto_riesgo': { title: 'Estudio de Caso: Ruido Excesivo (Comunicación)', content: "Medición confirmó niveles peligrosos. Acción: encapsular máquina. Comunicación: carteles de EPP y charla para explicar la solución y beneficios." }
+      }
+    };
+
+    function showCaseStudy(stepId) {
+      const profile = localStorage.getItem(contextStorageKey) || 'bajo_riesgo';
+      const study = caseStudies[stepId] ? caseStudies[stepId][profile] : null;
+      if (study) showModal(study.title, study.content);
+    }
+
+    // Quiz
+    const quizModalOverlay = document.getElementById('quiz-modal-overlay');
+    const quizTitle = document.getElementById('quiz-title');
+    const quizQuestion = document.getElementById('quiz-question');
+    const quizOptions = document.getElementById('quiz-options');
+    const quizFeedback = document.getElementById('quiz-feedback');
+    const quizCloseTop = document.getElementById('quiz-close');
+    const quizCloseBottom = document.getElementById('quiz-footer-close');
+    if (quizCloseTop) quizCloseTop.addEventListener('click', hideQuiz);
+    if (quizCloseBottom) quizCloseBottom.addEventListener('click', hideQuiz);
+
+    const quizData = {
+      'step1': { title: 'Paso 1: ¿Por qué Evaluar?', question: 'Según la norma, ¿cuál es el propósito principal de la evaluación del desempeño en SST?', options: ['Para cumplir con un requisito de auditoría y obtener un certificado.', 'Para tomar decisiones efectivas e impulsar la mejora continua.', 'Para encontrar trabajadores culpables de incidentes y sancionarlos.', 'Para generar reportes mensuales para la gerencia.'], answer: 1 },
+      'step2': { title: 'Paso 2: El Proceso Central', question: '¿Cuál es el PRIMER elemento en el proceso de evaluación según la Sección 5.2?', options: ['Establecer los resultados previstos (¿Qué queremos lograr?).', 'Emprender acciones basadas en la evaluación.', 'Monitorear, medir y analizar el desempeño.', 'Revisar las consecuencias no deseadas.'], answer: 0 },
+      'step3': { title: 'Paso 3: Fuentes de Información', question: 'Al investigar un incidente (Sección 5.3.10), ¿qué error se debe evitar?', options: ['Entrevistar a los testigos del incidente.', 'Revisar si los equipos funcionaban correctamente.', 'Establecer la culpa del trabajador sin considerar factores organizacionales (fatiga, recursos).', 'Documentar la secuencia de eventos que llevaron al incidente.'], answer: 2 },
+      'step4': { title: 'Paso 4: Tipos de Indicadores', question: 'Un indicador "Proactivo" (Leading) es aquel que:', options: ['Mide resultados pasados, como el número de lesiones.', 'Mide acciones para influir en el desempeño futuro, como el % de formaciones completadas.', 'Solo lo utiliza la alta dirección para informes financieros.', 'Es difícil de medir y no es comparable.'], answer: 1 },
+      'step5': { title: 'Paso 5: Monitorear, Medir, Analizar', question: '¿Cuál es la diferencia entre "Medir" y "Analizar"?', options: ['No hay diferencia, son lo mismo.', 'Medir es asignar un número (cuantitativo) y Analizar es buscar patrones y tendencias en esos números.', 'Medir es cualitativo (observar) y Analizar es cuantitativo (contar).', 'Medir lo hacen los supervisores y Analizar lo hace la gerencia.'], answer: 1 },
+      'step6': { title: 'Paso 6: Actuar y Comunicar', question: '¿A quiénes se deben comunicar los resultados de la evaluación del desempeño (Sección 9)?', options: ['Solo a la alta dirección.', 'Solo a los auditores externos.', 'Solo a los trabajadores que tuvieron incidentes.', 'A los trabajadores y otras partes interesadas pertinentes, según el plan de comunicación.'], answer: 3 },
+      'step7': { title: 'Paso 7: Revisar y Mejorar', question: '¿Por qué es crucial revisar el propio proceso de evaluación (Sección 11)?', options: ['Para asegurarse de que no esté causando consecuencias no deseadas (ej. miedo a reportar).', 'Porque la ley obliga a cambiar los indicadores cada año.', 'Para reducir el número de indicadores y ahorrar tiempo.', 'Para alinear la evaluación con los objetivos de marketing.'], answer: 0 }
+    };
+
+    function showQuiz(stepId) {
+      const data = quizData[stepId]; if (!data) return;
+      lastFocused = document.activeElement;
+      quizTitle.textContent = data.title; quizQuestion.textContent = data.question;
+      quizOptions.innerHTML = ''; quizFeedback.innerHTML = '';
+      data.options.forEach((text, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.textContent = text;
+        btn.className = 'quiz-option block w-full text-left p-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-800';
+        btn.addEventListener('click', () => checkAnswer(stepId, idx));
+        quizOptions.appendChild(btn);
+      });
+      quizModalOverlay.classList.remove('hidden');
+      trapFocus(quizModalOverlay);
+    }
+    function hideQuiz() { quizModalOverlay.classList.add('hidden'); if (lastFocused) lastFocused.focus(); }
+    function checkAnswer(stepId, selectedIndex) {
+      const data = quizData[stepId]; const correctIndex = data.answer;
+      const buttons = quizOptions.querySelectorAll('.quiz-option');
+      buttons.forEach((b, i) => { b.classList.add('disabled'); if (i === correctIndex) b.classList.add('correct'); else if (i === selectedIndex) b.classList.add('incorrect'); });
+      if (selectedIndex === correctIndex) { quizFeedback.textContent = '¡Correcto!'; quizFeedback.className = 'mt-4 text-base font-semibold text-green-600'; }
+      else { quizFeedback.textContent = 'Incorrecto. La respuesta correcta está resaltada en verde.'; quizFeedback.className = 'mt-4 text-base font-semibold text-red-600'; }
+    }
+
+    // Wizard (Funcionalidad de IA eliminada)
+    
+    // Checklist con localStorage
+    const checklistStorageKey = 'laMovidaSSTChecklistState';
+    const checklistItems = document.querySelectorAll('.sst-checkbox');
+    const checklistProgressBar = document.getElementById('checklist-progress-bar');
+    const checklistProgressText = document.getElementById('checklist-progress-text');
+    const checklistProgressPercent = document.getElementById('checklist-progress-percent');
+    const resetChecklistButton = document.getElementById('reset-checklist-button');
+    const totalChecklistItems = checklistItems.length;
+
+    function initializeChecklist() {
+      checklistItems.forEach(item => {
+        item.addEventListener('change', () => {
+          item.parentElement.classList.toggle('checked', item.checked);
+          saveChecklistState(); updateChecklistProgress();
+        });
+      });
+      if (resetChecklistButton) resetChecklistButton.addEventListener('click', resetChecklist);
+      loadChecklistState();
+    }
+    function loadChecklistState() {
+      const saved = localStorage.getItem(checklistStorageKey); let state = {};
+      if (saved) { try { state = JSON.parse(saved); } catch(_) { state = {}; } }
+      checklistItems.forEach(item => {
+        if (state[item.id]) { item.checked = true; item.parentElement.classList.add('checked'); }
+        else { item.checked = false; item.parentElement.classList.remove('checked'); }
+      });
+      updateChecklistProgress();
+    }
+    function saveChecklistState() { const st = {}; checklistItems.forEach(i => { if (i.checked) st[i.id] = true; }); localStorage.setItem(checklistStorageKey, JSON.stringify(st)); }
+    function updateChecklistProgress() {
+      if (!checklistProgressBar || !checklistProgressText || !checklistProgressPercent) return;
+      const checkedCount = document.querySelectorAll('.sst-checkbox:checked').length;
+      const pct = (totalChecklistItems > 0) ? (checkedCount / totalChecklistItems) * 100 : 0;
+      checklistProgressBar.style.width = `${pct}%`;
+      checklistProgressText.textContent = `Progreso del Checklist: ${checkedCount} de ${totalChecklistItems}`;
+      checklistProgressPercent.textContent = `${Math.round(pct)}%`;
+    }
+    function resetChecklist() {
+      checklistItems.forEach(i => { i.checked = false; i.parentElement.classList.remove('checked'); });
+      saveChecklistState(); updateChecklistProgress();
+    }
+
+    // Funciones de IA eliminadas
+    
+  </script>
+</body>
+</html>
